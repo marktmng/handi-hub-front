@@ -19,7 +19,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { ENDPOINTS } from "../../Constant";
 
-function ProductManagement() {
+function AddProduct() {
   const [product, setProduct] = useState({
     productId: 0,
     productName: "",
@@ -170,7 +170,7 @@ function ProductManagement() {
             justifyContent: "center",
           }}
         >
-          Add New Product
+          Add Product
         </Typography>
 
         <Divider sx={{ mb: 4 }} />
@@ -267,9 +267,10 @@ function ProductManagement() {
                   src={imagePreview}
                   alt="Preview"
                   sx={{
-                    width: "100%",
-                    height: 200,
-                    objectFit: "contain",
+                    width: "50%",
+                    height: "50%",
+                    maxHeight: 70,
+                    objectFit: "cover",
                     borderRadius: 2,
                     border: "1px solid #ddd",
                     mt: 1,
@@ -290,6 +291,7 @@ function ProductManagement() {
                   value={product.categoryId}
                   onChange={handleChange}
                   label="Category"
+                  width="50%"
                 >
                   <MenuItem value="">Select a category</MenuItem>
                   {categories.map((cat, idx) => (
@@ -318,6 +320,7 @@ function ProductManagement() {
                   value={product.artistId}
                   onChange={handleChange}
                   label="Artist"
+                  width="50%"
                 >
                   <MenuItem value="">Select an artist</MenuItem>
                   {artists.map((artist, idx) => {
@@ -348,12 +351,13 @@ function ProductManagement() {
               </FormControl>
             </Grid>
 
-            <Grid item xs={12} sx={{ textAlign: "center", mt: 4 }}>
+            <Grid item xs={12}>
               <Button
                 type="submit"
                 variant="contained"
                 size="large"
                 startIcon={<Save />}
+                sx={{ backgroundColor: "#928371ff", mt: 2 }}
               >
                 Save Product
               </Button>
@@ -365,4 +369,4 @@ function ProductManagement() {
   );
 }
 
-export default ProductManagement;
+export default AddProduct;
