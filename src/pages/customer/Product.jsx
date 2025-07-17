@@ -32,7 +32,13 @@ function Product() {
   };
 
   useEffect(() => {
-    fetchProducts();
+    const productUpdated = localStorage.getItem("productUpdated");
+    if (productUpdated === "true") {
+      fetchProducts();
+      localStorage.removeItem("productUpdated");
+    } else {
+      fetchProducts();
+    }
   }, []);
 
   return (
@@ -124,7 +130,11 @@ function Product() {
                   <Typography variant="body2">
                     In Stock: {product.quantity}
                   </Typography>
-                  <Button size="small" variant="contained" color="primary">
+                  <Button
+                    size="small"
+                    variant="contained"
+                    sx={{ bgcolor: "#928371ff" }}
+                  >
                     Add to Cart
                   </Button>
                 </CardActions>
