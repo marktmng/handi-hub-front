@@ -357,7 +357,7 @@ function AddProduct() {
                 variant="contained"
                 size="large"
                 startIcon={<Save />}
-                sx={{ backgroundColor: "#928371ff", mt: 2 }}
+                sx={{ backgroundColor: "#576b49ff", mt: 2 }}
               >
                 Save Product
               </Button>

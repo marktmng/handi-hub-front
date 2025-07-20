@@ -112,6 +112,7 @@ function ProductTable() {
                         onClick={() => handleEdit(product.productId)}
                         size="small"
                         variant="outlined"
+                        color="#576b49ff"
                         sx={{ mr: 1 }}
                       >
                         Edit

@@ -1,5 +1,5 @@
 function CustomerManagement() {
-  return <div>Artist Dashboard</div>;
+  return <div>Customer Table</div>;
 }
 
 export default CustomerManagement;

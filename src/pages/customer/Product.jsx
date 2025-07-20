@@ -133,7 +133,7 @@ function Product() {
                   <Button
                     size="small"
                     variant="contained"
-                    sx={{ bgcolor: "#928371ff" }}
+                    sx={{ bgcolor: "#576b49ff" }}
                   >
                     Add to Cart
                   </Button>
