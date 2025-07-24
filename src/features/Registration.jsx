@@ -53,6 +53,9 @@ function Registration() {
     if (!formData.password) newErrors.password = "Password is required";
     if (formData.password !== formData.passwordConfirm)
       newErrors.passwordConfirm = "Passwords do not match";
+    if (formData.role === "Artist" && !formData.bio.trim()) {
+      newErrors.bio = "Bio is required for artists";
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -72,6 +75,7 @@ function Registration() {
         email: "",
         phoneNumber: "",
         role: "Customer",
+        Bio: "",
         password: "",
         passwordConfirm: "",
       });
@@ -91,7 +95,7 @@ function Registration() {
           gutterBottom
           sx={{
             fontWeight: 700,
-            color: "#2c3e50",
+            color: "#576b49ff",
             mb: 3,
             display: "flex",
             alignItems: "center",
@@ -200,6 +204,23 @@ function Registration() {
                 {errors.role && <FormHelperText>{errors.role}</FormHelperText>}
               </FormControl>
             </Grid>
+
+            {formData.role === "Artist" && (
+              <Grid item xs={12}>
+                <TextField
+                  name="bio"
+                  label="Artist Bio"
+                  fullWidth
+                  required
+                  multiline
+                  minRows={3}
+                  value={formData.bio}
+                  onChange={handleChange}
+                  error={!!errors.bio}
+                  helperText={errors.bio}
+                />
+              </Grid>
+            )}
 
             <Grid item xs={12} md={6}>
               <TextField

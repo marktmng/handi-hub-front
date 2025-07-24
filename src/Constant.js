@@ -42,7 +42,7 @@ export const ENDPOINTS = {
     GET_ALL: `${BASE_URL}/Product/GetProducts`,
     GET_BY_ID: (productId) =>
       `${BASE_URL}/Product/GetProducts?productId=${productId}`,
-    GET_FILTERED: ({ productId, searchTerm, categoryId, artistId }) => {
+    SEARCH: ({ productId, searchTerm, categoryId, artistId }) => {
       const params = new URLSearchParams();
 
       if (productId) params.append("productId", productId);

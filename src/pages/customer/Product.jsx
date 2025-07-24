@@ -12,17 +12,30 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { ENDPOINTS } from "../../Constant";
+import { useCart } from "../../components/CartContext";
 
 function Product() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { addToCart } = useCart();
+  const location = useLocation();
 
-  // Fetch products
+  // Get search query from URL
+  const queryParams = new URLSearchParams(location.search);
+  const searchTerm = queryParams.get("search");
+
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(ENDPOINTS.PRODUCT.GET_ALL);
+      let url = ENDPOINTS.PRODUCT.GET_ALL;
+
+      if (searchTerm) {
+        url = ENDPOINTS.PRODUCT.SEARCH({ searchTerm });
+      }
+
+      const res = await axios.get(url);
       setProducts(res.data);
     } catch (err) {
       console.error("Failed to fetch products", err);
@@ -32,14 +45,8 @@ function Product() {
   };
 
   useEffect(() => {
-    const productUpdated = localStorage.getItem("productUpdated");
-    if (productUpdated === "true") {
-      fetchProducts();
-      localStorage.removeItem("productUpdated");
-    } else {
-      fetchProducts();
-    }
-  }, []);
+    fetchProducts();
+  }, [searchTerm]);
 
   return (
     <Container maxWidth="lg" sx={{ py: 5 }}>
@@ -53,12 +60,12 @@ function Product() {
         </Box>
       ) : products.length === 0 ? (
         <Typography align="center" sx={{ mt: 4 }}>
-          No products available at the moment.
+          No products found.
         </Typography>
       ) : (
         <Grid container spacing={3}>
           {products.map((product) => (
-            <Grid item xs={12} sm={6} md={3} key={product.productName}>
+            <Grid item xs={12} sm={6} md={3} key={product.productId}>
               <Card
                 sx={{
                   display: "flex",
@@ -67,36 +74,17 @@ function Product() {
                   height: "100%",
                 }}
               >
-                {/* 🔧 Fixed-height image container */}
-                <Box
-                  sx={{
-                    height: 180,
-                    overflow: "hidden",
-                  }}
-                >
+                <Box sx={{ height: 180, overflow: "hidden" }}>
                   <CardMedia
                     component="img"
                     image={product.productImage}
                     alt={product.productName}
-                    sx={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                    }}
+                    sx={{ width: "100%", height: "100%", objectFit: "cover" }}
                   />
                 </Box>
 
-                {/* Product Info */}
                 <CardContent sx={{ flexGrow: 1 }}>
-                  <Typography
-                    variant="h6"
-                    gutterBottom
-                    sx={{
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
+                  <Typography variant="h6" gutterBottom noWrap>
                     {product.productName}
                   </Typography>
 
@@ -123,7 +111,6 @@ function Product() {
                   </Typography>
                 </CardContent>
 
-                {/* Actions */}
                 <CardActions
                   sx={{ justifyContent: "space-between", px: 2, pb: 2 }}
                 >
@@ -134,6 +121,7 @@ function Product() {
                     size="small"
                     variant="contained"
                     sx={{ bgcolor: "#576b49ff" }}
+                    onClick={() => addToCart(product)}
                   >
                     Add to Cart
                   </Button>

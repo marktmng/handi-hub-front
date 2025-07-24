@@ -176,6 +176,7 @@ function Users() {
                   { id: "email", label: "Email" },
                   { id: "phoneNumber", label: "Phone Number" },
                   { id: "role", label: "Role" },
+                  { id: "bio", label: "Bio" },
                 ].map((headCell) => (
                   <TableCell
                     key={headCell.id}
@@ -213,6 +214,7 @@ function Users() {
                   <TableCell>{user.email}</TableCell>
                   <TableCell>{user.phoneNumber}</TableCell>
                   <TableCell>{user.role}</TableCell>
+                  <TableCell>{user.bio}</TableCell>
                   <TableCell>
                     <Button
                       variant="outlined"
