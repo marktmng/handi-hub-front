@@ -9,12 +9,12 @@ import {
   Typography,
 } from "@mui/material";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode"; // ✔️ Use named import
 import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { ENDPOINTS } from "../Constant";
 
 function Login() {
-  // Hooks always at the top, before any return
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -24,11 +24,8 @@ function Login() {
 
   const [errors, setErrors] = useState({});
 
-  // Check token after hooks initialized
   const token = localStorage.getItem("token");
-
   if (token) {
-    // Redirect if logged in
     return <Navigate to="/profile" replace />;
   }
 
@@ -53,17 +50,45 @@ function Login() {
     if (!validateForm()) return;
 
     try {
+      // Step 1: Login to get token, refreshToken, and userId
       const response = await axios.post(ENDPOINTS.AUTH.LOGIN, formData);
       const { token, refreshToken } = response.data;
+
       localStorage.setItem("token", token);
       localStorage.setItem("refreshToken", refreshToken);
-      alert("✅ Login successful!");
 
-      setFormData({
-        email: "",
-        password: "",
+      // Extract or set userId
+      let userId = response.data.userId;
+      if (!userId) {
+        const decoded = jwtDecode(token);
+        userId = decoded.userId || decoded.sub;
+      }
+      if (userId) localStorage.setItem("userId", userId);
+
+      // Step 2: Fetch user details (including role)
+      const userRes = await axios.get(ENDPOINTS.USER.GET_BY_ID(userId), {
+        headers: { Authorization: `Bearer ${token}` },
       });
 
+      // The API returns array or object? Adjust accordingly:
+      const userData = Array.isArray(userRes.data)
+        ? userRes.data[0]
+        : userRes.data;
+
+      if (userData?.role) {
+        localStorage.setItem("role", userData.role);
+      } else {
+        localStorage.setItem("role", ""); // fallback or handle no role scenario
+      }
+      if (userData?.firstName) {
+        localStorage.setItem("firstName", userData.firstName);
+      } else {
+        localStorage.setItem("firstName", ""); // fallback or handle no first name scenario
+      }
+
+      alert("✅ Login successful!");
+      window.dispatchEvent(new Event("loginStatusChanged"));
+      setFormData({ email: "", password: "" });
       navigate("/profile");
     } catch (error) {
       console.error("❌ Login error:", error);
