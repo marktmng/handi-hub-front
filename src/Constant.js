@@ -31,7 +31,7 @@ export const ENDPOINTS = {
     // Customer endpoints
     GET_ALL: `${BASE_URL}/Customer/GetCustomers`,
     GET_BY_ID: (customerId) =>
-      `${BASE_URL}/Customer/GetCustomer?customerId=${customerId}`,
+      `${BASE_URL}/Customer/GetCustomers?customerId=${customerId}`,
     UPSERT: `${BASE_URL}/Customer/UpsertCustomer`,
     DELETE: (customerId) => `${BASE_URL}/Customer/Delete/${customerId}`,
     UPDATE: (customerId) => `${BASE_URL}/Customer/Update/${customerId}`,

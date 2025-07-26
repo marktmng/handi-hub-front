@@ -32,6 +32,9 @@ import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 
 import AddShoppingCartSharpIcon from "@mui/icons-material/AddShoppingCartSharp";
+import CategorySharpIcon from "@mui/icons-material/CategorySharp";
+import ClassSharpIcon from "@mui/icons-material/ClassSharp";
+import GradeIcon from "@mui/icons-material/Grade";
 import Inventory2SharpIcon from "@mui/icons-material/Inventory2Sharp";
 import InventorySharpIcon from "@mui/icons-material/InventorySharp";
 import PeopleOutlineSharpIcon from "@mui/icons-material/PeopleOutlineSharp";
@@ -39,9 +42,10 @@ import PersonAddSharpIcon from "@mui/icons-material/PersonAddSharp";
 import ShoppingCartSharpIcon from "@mui/icons-material/ShoppingCartSharp";
 import YoutubeSearchedForSharpIcon from "@mui/icons-material/YoutubeSearchedForSharp";
 
+import Categories from "../Categories";
+
 const drawerWidth = 240;
 
-// Main content area style with transition for drawer open/close
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   ({ theme, open }) => ({
     flexGrow: 1,
@@ -61,7 +65,6 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   })
 );
 
-// AppBar style with transition when drawer toggles
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== "open",
 })(({ theme, open }) => ({
@@ -79,7 +82,6 @@ const AppBar = styled(MuiAppBar, {
   }),
 }));
 
-// Drawer header style (for close button alignment)
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
@@ -90,42 +92,38 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 
 export default function Navigation() {
   const theme = useTheme();
-  const [open, setOpen] = useState(false); // State for drawer open/close
+  const [open, setOpen] = useState(false);
   const navigate = useNavigate();
 
-  // Toggle drawer open state
-  const handleDrawerOpen = () => setOpen(true);
-  const handleDrawerClose = () => setOpen(false);
-
-  // State for user menu anchor element (for popover menu)
   const [anchorElUser, setAnchorElUser] = useState(null);
-
-  // State to track if user is logged in or not
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  // Check localStorage token on component mount to determine login status
   const [userRole, setUserRole] = useState(localStorage.getItem("role"));
-
-  const firstName = localStorage.getItem("firstName") || "";
-  const lastName = localStorage.getItem("lastName") || "";
+  const [firstName, setFirstName] = useState(
+    localStorage.getItem("firstName") || ""
+  );
+  const [lastName, setLastName] = useState(
+    localStorage.getItem("lastName") || ""
+  );
 
   const getInitials = (first, last) => {
     const firstInitial = first?.charAt(0).toUpperCase() || "";
     const lastInitial = last?.charAt(0).toUpperCase() || "";
     return firstInitial + lastInitial;
   };
-
   const userInitials = getInitials(firstName, lastName);
 
   useEffect(() => {
     const checkLogin = () => {
       const token = localStorage.getItem("token");
       const role = localStorage.getItem("role");
+      const first = localStorage.getItem("firstName") || "";
+      const last = localStorage.getItem("lastName") || "";
       setIsLoggedIn(!!token);
       setUserRole(role);
+      setFirstName(first);
+      setLastName(last);
     };
 
-    // Run once on mount
     checkLogin();
 
     window.addEventListener("loginStatusChanged", checkLogin);
@@ -134,37 +132,36 @@ export default function Navigation() {
     };
   }, []);
 
-  // Open user menu popover
+  const handleDrawerOpen = () => setOpen(true);
+  const handleDrawerClose = () => setOpen(false);
+
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
   };
 
-  // Close user menu popover
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
 
-  // Logout function: clear tokens, update state, redirect to login page
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("refreshToken");
+    localStorage.removeItem("firstName");
+    localStorage.removeItem("lastName");
+    setFirstName("");
+    setLastName("");
     setIsLoggedIn(false);
     handleCloseUserMenu();
     alert("Logged out successfully");
     navigate("/login");
   };
 
-  // Menu items when logged out
   const settingsLoggedOut = ["Profile", "Register", "Login"];
-
-  // Menu items when logged in
   const settingsLoggedIn = ["Profile", "Register", "Logout"];
 
-  // State and handlers for search input toggle and value
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Function to handle search submit
   const handleSearchSubmit = () => {
     if (searchTerm.trim() !== "") {
       navigate(`/?search=${encodeURIComponent(searchTerm.trim())}`);
@@ -173,24 +170,26 @@ export default function Navigation() {
     }
   };
 
-  // Toggle search bar open/close
   const toggleSearch = () => {
     setSearchOpen((prev) => !prev);
     setSearchTerm("");
   };
 
+  // Handler for when user clicks on category in drawer
+  const handleCategorySelect = (categoryId) => {
+    navigate(`/home?categoryId=${categoryId}`);
+    setOpen(false); // optional: close drawer after selecting category
+  };
+
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
-
-      {/* App Bar with menu button and site title */}
       <AppBar
         position="fixed"
         open={open}
         sx={{ backgroundColor: "#576b49ff" }}
       >
         <Toolbar>
-          {/* Hamburger icon to open drawer */}
           <IconButton
             color="#576b49ff"
             aria-label="open drawer"
@@ -201,7 +200,6 @@ export default function Navigation() {
             <MenuIcon />
           </IconButton>
 
-          {/* Site title clickable to navigate home */}
           <Typography
             variant="h6"
             noWrap
@@ -218,12 +216,6 @@ export default function Navigation() {
             HANDIHUB
           </Typography>
 
-          {/* User login status and role display */}
-          {/* <Typography variant="body2" color="white" sx={{ m: 2 }}>
-            Logged in: {isLoggedIn ? "Yes" : "No"} | Role: {userRole}
-          </Typography> */}
-
-          {/* Centered Navigation Buttons */}
           <Box
             sx={{
               flexGrow: 1,
@@ -251,7 +243,6 @@ export default function Navigation() {
             })}
           </Box>
 
-          {/* Search icon & input container */}
           <Box
             sx={{
               position: "relative",
@@ -291,8 +282,8 @@ export default function Navigation() {
               componentsProps={{
                 tooltip: {
                   sx: {
-                    bgcolor: "#576b49ff", // your desired background color
-                    color: "white", // text color
+                    bgcolor: "#8ba57d",
+                    color: "white",
                     fontSize: "0.9rem",
                   },
                 },
@@ -310,7 +301,6 @@ export default function Navigation() {
               </IconButton>
             </Tooltip>
 
-            {/* Close button when search input is open */}
             {searchOpen && (
               <IconButton
                 onClick={toggleSearch}
@@ -321,16 +311,15 @@ export default function Navigation() {
               </IconButton>
             )}
           </Box>
-
-          {/* Cart Icon with Badge */}
+          {/* add cart */}
           <Tooltip
             title="Cart"
             arrow
             componentsProps={{
               tooltip: {
                 sx: {
-                  bgcolor: "#576b49ff", // your desired background color
-                  color: "white", // text color
+                  bgcolor: "#8ba57d",
+                  color: "white",
                   fontSize: "0.9rem",
                 },
               },
@@ -351,7 +340,35 @@ export default function Navigation() {
             </IconButton>
           </Tooltip>
 
-          {/* Avatar and Menu */}
+          {/* wishlist */}
+          <Tooltip
+            title="Wishlist"
+            arrow
+            componentsProps={{
+              tooltip: {
+                sx: {
+                  bgcolor: "#8ba57d",
+                  color: "white",
+                  fontSize: "0.9rem",
+                },
+              },
+            }}
+          >
+            <IconButton
+              sx={{ color: "white", mr: 2 }}
+              onClick={() => navigate("/wishlist")}
+            >
+              <Badge
+                badgeContent={JSON.parse(
+                  localStorage.getItem("wishlist") || "[]"
+                ).reduce((sum, item) => sum + item.quantity, 0)}
+                color="secondary"
+              >
+                <GradeIcon />
+              </Badge>
+            </IconButton>
+          </Tooltip>
+
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip
               title="Profile"
@@ -359,8 +376,8 @@ export default function Navigation() {
               componentsProps={{
                 tooltip: {
                   sx: {
-                    bgcolor: "#576b49ff", // your desired background color
-                    color: "white", // text color
+                    bgcolor: "#8ba57d",
+                    color: "white",
                     fontSize: "0.9rem",
                   },
                 },
@@ -370,7 +387,7 @@ export default function Navigation() {
                 <Avatar
                   sx={{
                     bgcolor: "inherit",
-                    border: "2px solid white", // outline thickness and color
+                    border: "2px solid white",
                     color: "white",
                     fontWeight: 600,
                   }}
@@ -435,7 +452,6 @@ export default function Navigation() {
         </Toolbar>
       </AppBar>
 
-      {/* Side Drawer for navigation */}
       <Drawer
         sx={{
           width: drawerWidth,
@@ -450,7 +466,6 @@ export default function Navigation() {
         anchor="left"
         open={open}
       >
-        {/* Drawer header with close icon */}
         <DrawerHeader>
           <IconButton onClick={handleDrawerClose}>
             {theme.direction === "ltr" ? (
@@ -460,22 +475,34 @@ export default function Navigation() {
             )}
           </IconButton>
         </DrawerHeader>
-        <Divider /> {/* Divider */}
+        <Divider />
+
         {/* Customer */}
-        {isLoggedIn && userRole === "Customer" && (
-          <List>
-            <ListItem disablePadding>
-              <ListItemButton onClick={() => navigate("/cart")}>
-                <ListItemIcon>
-                  <ShoppingCartSharpIcon />
-                </ListItemIcon>
-                <ListItemText primary="Cart" />
-              </ListItemButton>
-            </ListItem>
-          </List>
-        )}
-        <Divider /> {/* Divider Artist*/}
-        {/* Product management list */}
+        <List>
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => navigate("/cart")}>
+              <ListItemIcon>
+                <ShoppingCartSharpIcon />
+              </ListItemIcon>
+              <ListItemText primary="Cart" />
+            </ListItemButton>
+          </ListItem>
+
+          <Divider />
+
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => navigate("/wishlist")}>
+              <ListItemIcon>
+                <GradeIcon />
+              </ListItemIcon>
+              <ListItemText primary="Wishlist" />
+            </ListItemButton>
+          </ListItem>
+        </List>
+
+        <Divider />
+
+        {/* Artist product management */}
         {isLoggedIn && userRole === "Artist" && (
           <List>
             <ListItem disablePadding>
@@ -497,12 +524,28 @@ export default function Navigation() {
             </ListItem>
           </List>
         )}
-        <Divider /> {/* Divider for customer management section */}
-        {/* Customer management list */}
+
+        {(isLoggedIn && userRole === "Artist") ||
+          (userRole === "Admin" && (
+            <List>
+              <ListItem disablePadding>
+                <ListItemButton onClick={() => navigate("/manage-product")}>
+                  <ListItemIcon>
+                    <InventorySharpIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Products" />
+                </ListItemButton>
+              </ListItem>
+            </List>
+          ))}
+
+        <Divider />
+
+        {/* Customer management */}
         {isLoggedIn && (userRole === "Artist" || userRole === "Admin") && (
           <List>
             <ListItem disablePadding>
-              <ListItemButton onClick={() => navigate("/manage-customer")}>
+              <ListItemButton onClick={() => navigate("/customers")}>
                 <ListItemIcon>
                   <PeopleOutlineSharpIcon />
                 </ListItemIcon>
@@ -511,18 +554,10 @@ export default function Navigation() {
             </ListItem>
           </List>
         )}
-        <Divider /> {/* Divider for admin dashboard section */}
-        {/* Admin dashboard list */}
-        {/* <List>
-          <ListItem disablePadding>
-            <ListItemButton onClick={() => navigate("/users")}>
-              <ListItemIcon>
-                <PersonAddSharpIcon />
-              </ListItemIcon>
-              <ListItemText primary="Users" />
-            </ListItemButton>
-          </ListItem>
-        </List> */}
+
+        <Divider />
+
+        {/* Admin */}
         {isLoggedIn && userRole === "Admin" && (
           <List>
             <ListItem disablePadding>
@@ -535,9 +570,35 @@ export default function Navigation() {
             </ListItem>
           </List>
         )}
+
+        <Divider />
+
+        {/* Admin */}
+        {isLoggedIn && (userRole === "Artist" || userRole === "Admin") && (
+          <List>
+            <ListItem disablePadding>
+              <ListItemButton onClick={() => navigate("/add-category")}>
+                <ListItemIcon>
+                  <CategorySharpIcon />
+                </ListItemIcon>
+                <ListItemText primary="Add Category" />
+              </ListItemButton>
+            </ListItem>
+          </List>
+        )}
+
+        <Divider />
+        <List>
+          <ListItem>
+            <ListItemIcon>
+              <ClassSharpIcon />
+            </ListItemIcon>
+            <ListItemText primary="Categories" />
+          </ListItem>
+          <Categories onCategorySelect={handleCategorySelect} />
+        </List>
       </Drawer>
 
-      {/* Main content area where routes render */}
       <Main open={open}>
         <DrawerHeader />
         <Outlet />
