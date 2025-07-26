@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import axios from "axios";
-import { jwtDecode } from "jwt-decode"; // ✔️ Use named import
+import { jwtDecode } from "jwt-decode";
 import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { ENDPOINTS } from "../Constant";
@@ -50,49 +50,57 @@ function Login() {
     if (!validateForm()) return;
 
     try {
-      // Step 1: Login to get token, refreshToken, and userId
-      const response = await axios.post(ENDPOINTS.AUTH.LOGIN, formData);
-      const { token, refreshToken } = response.data;
+      console.log("🔐 Attempting login with:", formData);
+
+      // Step 1: Login
+      const response = await axios.post(ENDPOINTS.AUTH.LOGIN, {
+        email: formData.email.trim(),
+        password: formData.password,
+      });
+
+      const { token, refreshToken, userId } = response.data;
 
       localStorage.setItem("token", token);
       localStorage.setItem("refreshToken", refreshToken);
 
-      // Extract or set userId
-      let userId = response.data.userId;
-      if (!userId) {
+      // Extract userId from token if not included in response
+      let finalUserId = userId;
+      if (!finalUserId) {
         const decoded = jwtDecode(token);
-        userId = decoded.userId || decoded.sub;
+        finalUserId = decoded.userId || decoded.sub;
       }
-      if (userId) localStorage.setItem("userId", userId);
 
-      // Step 2: Fetch user details (including role)
-      const userRes = await axios.get(ENDPOINTS.USER.GET_BY_ID(userId), {
+      if (finalUserId) {
+        localStorage.setItem("userId", finalUserId);
+      } else {
+        throw new Error("User ID not found in token or response.");
+      }
+
+      // Step 2: Fetch full user data
+      const userRes = await axios.get(ENDPOINTS.USER.GET_BY_ID(finalUserId), {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      // The API returns array or object? Adjust accordingly:
       const userData = Array.isArray(userRes.data)
         ? userRes.data[0]
         : userRes.data;
 
-      if (userData?.role) {
-        localStorage.setItem("role", userData.role);
-      } else {
-        localStorage.setItem("role", ""); // fallback or handle no role scenario
-      }
-      if (userData?.firstName) {
-        localStorage.setItem("firstName", userData.firstName);
-      } else {
-        localStorage.setItem("firstName", ""); // fallback or handle no first name scenario
-      }
+      // Store useful user data
+      localStorage.setItem("role", userData?.role || "");
+      localStorage.setItem("firstName", userData?.firstName || "");
+      localStorage.setItem("lastName", userData?.lastName || "");
 
       alert("✅ Login successful!");
       window.dispatchEvent(new Event("loginStatusChanged"));
       setFormData({ email: "", password: "" });
       navigate("/profile");
     } catch (error) {
-      console.error("❌ Login error:", error);
-      alert("❌ Login failed. Please check your credentials.");
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        "Login failed. Please check your credentials.";
+      console.error("❌ Login error:", error.response || error);
+      alert(`❌ ${message}`);
     }
   };
 

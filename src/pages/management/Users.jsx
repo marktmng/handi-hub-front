@@ -39,9 +39,15 @@ function Users() {
   // Fetch users
   const fetchUsers = async () => {
     setLoading(true);
+    const token = localStorage.getItem("token");
     try {
-      const res = await axios.get(ENDPOINTS.USER.GET_ALL);
+      const res = await axios.get(ENDPOINTS.USER.GET_ALL, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setUsers(res.data);
+      console.log("Users data:", res.data);
     } catch (err) {
       console.error("Failed to fetch users", err);
     } finally {

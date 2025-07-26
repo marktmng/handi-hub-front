@@ -4,16 +4,46 @@ import {
   Card,
   CardActions,
   CardContent,
+  CardMedia,
   Container,
   Divider,
   Grid,
   Typography,
 } from "@mui/material";
-import { useCart } from "./CartContext";
+import { useNavigate } from "react-router-dom";
+import { useCart } from "../components/CartContext";
 
 function Cart() {
   const { cart, removeFromCart, clearCart } = useCart();
+  const navigate = useNavigate();
 
+  // Get login info from localStorage
+  const token = localStorage.getItem("token");
+  const userRole = localStorage.getItem("role");
+
+  // Restrict access if not logged in as Customer
+  if (!token || userRole !== "Customer") {
+    return (
+      <Container sx={{ py: 5, textAlign: "center" }}>
+        <Typography variant="h5" color="error" gutterBottom>
+          🚫 Access Denied
+        </Typography>
+        <Typography variant="body1" sx={{ mb: 3 }}>
+          Please log in as a Customer to access the shopping cart.
+        </Typography>
+        <Button
+          sx={{ bgcolor: "#576b49ff" }}
+          variant="contained"
+          color="primary"
+          onClick={() => navigate("/login")}
+        >
+          Go to Login
+        </Button>
+      </Container>
+    );
+  }
+
+  // Calculate total price
   const total = cart.reduce(
     (sum, item) => sum + item.sellingPrice * item.quantity,
     0
@@ -33,7 +63,20 @@ function Cart() {
             {cart.map((item) => (
               <Grid item xs={12} md={6} lg={4} key={item.productId}>
                 <Card sx={{ height: "100%", boxShadow: 3, borderRadius: 3 }}>
-                  <CardContent>
+                  <CardContent sx={{ p: 2, width: 250, height: 300 }}>
+                    <Box sx={{ height: 180, overflow: "hidden" }}>
+                      <CardMedia
+                        component="img"
+                        height="100%"
+                        image={item.productImage}
+                        alt={item.productName}
+                        sx={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                        }}
+                      />
+                    </Box>
                     <Typography variant="h6" fontWeight="bold">
                       {item.productName}
                     </Typography>
