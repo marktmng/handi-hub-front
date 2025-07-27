@@ -21,7 +21,7 @@ function Wishlist() {
   const userRole = localStorage.getItem("role");
 
   // Block access if not logged in
-  if (!token || userRole !== "customer") {
+  if (!token || userRole !== "Customer") {
     return (
       <Container sx={{ py: 5, textAlign: "center" }}>
         <Typography variant="h5" color="error" gutterBottom>

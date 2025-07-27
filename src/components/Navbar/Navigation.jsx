@@ -35,6 +35,7 @@ import AddShoppingCartSharpIcon from "@mui/icons-material/AddShoppingCartSharp";
 import CategorySharpIcon from "@mui/icons-material/CategorySharp";
 import ClassSharpIcon from "@mui/icons-material/ClassSharp";
 import GradeIcon from "@mui/icons-material/Grade";
+import Groups3SharpIcon from "@mui/icons-material/Groups3Sharp";
 import Inventory2SharpIcon from "@mui/icons-material/Inventory2Sharp";
 import InventorySharpIcon from "@mui/icons-material/InventorySharp";
 import PeopleOutlineSharpIcon from "@mui/icons-material/PeopleOutlineSharp";
@@ -191,7 +192,7 @@ export default function Navigation() {
       >
         <Toolbar>
           <IconButton
-            color="#576b49ff"
+            color="inherit"
             aria-label="open drawer"
             onClick={handleDrawerOpen}
             edge="start"
@@ -498,11 +499,22 @@ export default function Navigation() {
               <ListItemText primary="Wishlist" />
             </ListItemButton>
           </ListItem>
+          {/* hide for artists and admins */}
+          {(!isLoggedIn || (userRole !== "Artist" && userRole !== "Admin")) && (
+            <ListItem disablePadding>
+              <ListItemButton onClick={() => navigate("/artists")}>
+                <ListItemIcon>
+                  <Groups3SharpIcon />
+                </ListItemIcon>
+                <ListItemText primary="Artists" />
+              </ListItemButton>
+            </ListItem>
+          )}
         </List>
 
         <Divider />
 
-        {/* Artist product management */}
+        {/* Artist and Admin product management */}
         {isLoggedIn && userRole === "Artist" && (
           <List>
             <ListItem disablePadding>
@@ -561,7 +573,7 @@ export default function Navigation() {
         {isLoggedIn && userRole === "Admin" && (
           <List>
             <ListItem disablePadding>
-              <ListItemButton onClick={() => navigate("/artists")}>
+              <ListItemButton onClick={() => navigate("/artists-management")}>
                 <ListItemIcon>
                   <PersonAddSharpIcon />
                 </ListItemIcon>
@@ -573,7 +585,7 @@ export default function Navigation() {
 
         <Divider />
 
-        {/* Admin */}
+        {/* Artist and Admin */}
         {isLoggedIn && (userRole === "Artist" || userRole === "Admin") && (
           <List>
             <ListItem disablePadding>

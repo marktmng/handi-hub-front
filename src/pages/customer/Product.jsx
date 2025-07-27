@@ -61,7 +61,11 @@ function Product() {
   return (
     <Container sx={{ mt: 4, mb: 4 }}>
       <Box sx={{ width: "100%", textAlign: "center", mb: 4 }}>
-        <Typography variant="h4" gutterBottom>
+        <Typography
+          sx={{ fontWeight: 700, color: "#576b49ff" }}
+          variant="h4"
+          gutterBottom
+        >
           Explore Our Products
         </Typography>
       </Box>
