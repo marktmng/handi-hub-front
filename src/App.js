@@ -21,9 +21,14 @@ import EditArtist from "./pages/management/EditArtist";
 import { CartProvider } from "./components/CartContext";
 import { WishlistProvider } from "./components/WishListContext";
 
+import Cancel from "./components/Cancel";
 import Categories from "./components/Categories";
+import CheckoutPage from "./features/Checkout";
+import Success from "./components/Success";
 import ViewArtist from "./components/ViewArtist";
 import ViewProducts from "./components/ViewProducts";
+
+import ArtistCustomerView from "./pages/customer/ArtistCustomerView";
 
 import Cart from "./features/Cart";
 
@@ -44,6 +49,10 @@ function App() {
               <Route path="register" element={<Registration />} />
               <Route path="cart" element={<Cart />} />
               <Route path="wishlist" element={<Wishlist />} />
+              <Route path="checkout" element={<CheckoutPage />} />
+              <Route path="success" element={<Success />} />
+              <Route path="cancel" element={<Cancel />} />
+              <Route path="artists" element={<ArtistCustomerView />} />
 
               <Route
                 path="view-product/:productId"
@@ -68,7 +77,7 @@ function App() {
               <Route path="add-category" element={<AddCategory />} />
 
               {/* Admin */}
-              <Route path="artists" element={<Artist />} />
+              <Route path="artists-management" element={<Artist />} />
               <Route path="update-artist/:userId" element={<EditArtist />} />
             </Route>
           </Routes>

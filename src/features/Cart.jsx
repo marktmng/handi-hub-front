@@ -129,9 +129,7 @@ function Cart() {
               <Button
                 variant="contained"
                 color="error"
-                onClick={() =>
-                  alert("Checkout functionality not implemented yet")
-                }
+                onClick={() => navigate("/checkout", { state: { cart } })}
                 size="small"
                 sx={{ bgcolor: "#576b49ff" }}
               >
